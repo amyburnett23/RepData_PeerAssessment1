@@ -1,77 +1,105 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: "Amy Burnett Cross" 
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+Amy Burnett Cross  
 
 
 ## Loading and preprocessing the data
 
 Load the data (previously saved in the working directory).
-```{r, echo=TRUE}
+
+```r
 unzip("activity.zip")
 activity <- read.csv("activity.csv")
 ## Process/transform the data (if necessary) into a format suitable for your analysis
 ```
 
 Filter all na values.
-```{r, echo=TRUE}
-activity <- activity[!is.na(activity$steps),]
 
+```r
+activity <- activity[!is.na(activity$steps),]
 ```
 
 
 ## What is mean total number of steps taken per day?
 Calculate the total number of steps taken per day
-```{r, echo=TRUE}
+
+```r
 library(dplyr)
+```
+
+```
+## Warning: package 'dplyr' was built under R version 3.4.3
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 daily_activity <- activity %>% group_by(date) %>%
     summarise(total_steps = sum(steps))
 ```
 
 Print a histogram of the number of steps per five minute period.
-```{r, echo=TRUE}
+
+```r
 hist(activity$steps,
      main = "Frequency distribution of steps",
      xlab = "Steps")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
 Calculate the mean number of steps per five minute period.
-```{r, echo=TRUE}
+
+```r
 mean(activity$steps)
 ```
 
+```
+## [1] 37.3826
+```
+
 Calculate the median number of steps per five minute period.
-```{r, echo=TRUE}
+
+```r
 median(activity$steps)
 ```
 
-
-
-```{r, echo=TRUE}
+```
+## [1] 0
 ```
 
 
-```{r, echo=TRUE}
-```
 
 
-```{r, echo=TRUE}
-```
 
 
-```{r, echo=TRUE}
-```
 
 
-```{r, echo=TRUE}
-```
 
 
-```{r, echo=TRUE}
-```
+
+
+
+
+
+
+
+
+
 
 
 ## What is the average daily activity pattern?
