@@ -13,6 +13,7 @@ output:
 
 Load the data (previously saved in the working directory).
 ```{r, echo=TRUE}
+library(tidyverse)
 unzip("activity.zip")
 activity <- read.csv("activity.csv")
 ## Process/transform the data (if necessary) into a format suitable for your analysis
@@ -25,10 +26,10 @@ activity <- activity[!is.na(activity$steps),]
 ```
 
 
-## What is mean total number of steps taken per day?
+
+## Mean total number of steps taken per day
 Calculate the total number of steps taken per day.
 ```{r, echo=TRUE}
-library(dplyr)
 daily_activity <- activity %>% group_by(date) %>%
     summarise(total_steps = sum(steps))
 
@@ -53,14 +54,14 @@ Calculate the median number of steps per day.
 median(daily_activity$total_steps)
 ```
 
+
+
 ## What is the average daily activity pattern?
 
 ```{r, echo=TRUE}
 interval_avg_steps <- activity %>%
     group_by(interval) %>%
     summarise(avg_int_activity = mean(steps))
-
-library(ggplot2)
 
 j <- ggplot(interval_avg_steps, aes(interval, avg_int_activity))
 j <- j + geom_line()
@@ -70,14 +71,15 @@ j
 
 ```
 
-Which interval had the maximum average steps?
+Interval with the maximum average steps
 ```{r, echo=TRUE}
 max_interval <- interval_avg_steps[which.max(interval_avg_steps$avg_int_activity), ]
 print(max_interval)
 ```
 
-#Imputing missing values
 
+
+#Imputing missing values
 
 Calculate total number of missing values in dataset.
 ```{r, echo=TRUE}
@@ -129,43 +131,37 @@ median(daily_imputed_activity$total_imputed_steps)
 The mean and median of daily activity differs very little (less than 2 steps per day) when imputed values are included. This makes sense because the method used to impute values mimics daily patterns of activity.
 
 
+
 # Differences in activity patterns between weekdays and weekends
 
 ```{r, echo=TRUE}
-imputed_activity$day_of_week <- weekdays(as.Date(imputed_activity$date))
 
-imputed_activity <- imputed_activity %>% mutate(weekend_status = as.factor(if_else(day_of_week 
-                                                                                     %in% (c("Saturday", "Sunday")), 
-                                                                                     "Weekend", "Weekday")))
+library(lubridate)
 
-
-
+week_activity <- imputed_activity %>% mutate(day_of_week = weekdays(ymd(date))) %>%
+                                      mutate(weekend_status = as.factor(if_else(day_of_week 
+                                                                                 %in% (c("Saturday", "Sunday")), 
+                                                                                 "Weekends", "Weekdays"))) %>%
+                                      select(interval, imputed_steps, weekend_status) %>%
+                                      group_by(interval, weekend_status) %>%
+                                      summarise(imputed_steps = mean(imputed_steps)) 
+                                      
 ```
 
 Create a panel plot of time series of activity on weekends and weekdays.
 ```{r, echo=TRUE}
-ggplot(imputed_activity, 
+week_plot <- ggplot(week_activity, 
        aes(interval, imputed_steps, group = 1)) + 
     geom_line() +
     facet_wrap(~weekend_status, ncol = 1, nrow = 3) +
-    ggtitle("Daily Steps") +
+    ggtitle("Average Weekday and Weekend Steps") +
     xlab("Interval") +
     scale_x_continuous(breaks = 5) +
     ylab("Total Steps") +
     theme(plot.title = element_text(hjust = 0.5)) +
-    theme_classic()
+    theme_classic() +
+    theme(plot.title = element_text(lineheight=.8, face="bold"))
+
+week_plot
     
-
-# ggplot(IntervalDT , 
-    #    aes(x = interval , y = steps, color=`weekday or weekend`)) + 
-    # geom_line() + 
-    # labs(title = "Avg. Daily Steps by Weektype", x = "Interval", y = "No. of Steps") + 
-    # facet_wrap(~`weekday or weekend` , ncol = 1, nrow=2)
 ```
-
-# ggplot(nmmaps, aes(date,temp))+geom_point(color="aquamarine4")+facet_wrap(~year, nrow=1)
-
-
-
-
-
