@@ -63,11 +63,12 @@ interval_avg_steps <- activity %>%
     group_by(interval) %>%
     summarise(avg_int_activity = mean(steps))
 
-j <- ggplot(interval_avg_steps, aes(interval, avg_int_activity))
-j <- j + geom_line()
-j <- j + ggtitle("Average pattern of steps throughout the day")
-j <- j + ylab("Average steps")
-j
+ggplot(interval_avg_steps, aes(interval, avg_int_activity)) +
+        geom_line() +
+        ggtitle("Average pattern of steps throughout the day") +
+        ylab("Average steps") +
+        theme_classic()
+
 
 ```
 
@@ -89,7 +90,7 @@ length(which(is.na(activity$steps)))
 
 ```
 
-Impute values of missing data with mean steps for the day. Create new data frame that includes imputed values. Now there are no NAs in the data frame.
+Impute values of missing data with mean steps for the day. Create new data frame that includes imputed values.
 ```{r, echo=TRUE}
 activity$steps <- as.numeric(activity$steps)
 
